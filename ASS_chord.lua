@@ -73,4 +73,7 @@ function analyse(chord_str)
 end
 print(Y.table.tostring(analyse(("D#m7"))))
 --TO DO
---Add support for inversion.
+--1.Extend the range to two/three octaves.
+--2.Add support for inversion and polychords.
+--3.Add more synonyms.
+--Reference https://www.8notes.com/piano_chord_chart
