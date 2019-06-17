@@ -72,3 +72,5 @@ function analyse(chord_str)
 	return output_tbl
 end
 print(Y.table.tostring(analyse(("D#m7"))))
+--TO DO
+--Add support for inversion.
