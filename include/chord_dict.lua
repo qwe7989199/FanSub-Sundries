@@ -1,7 +1,32 @@
 --This file records chord relationship using number of half notes.(1 for C, 2 for #C etc.) 
---You can add your own chord following:
+--1.DO NOT CHANGE root_tbl.
+--2.You can add your own chord in chord_dict following:
 --["chord name"]={notes(small to large, maximum 24)},
 --Make sure that "chord name" doesn't contain brackets or slashes(/).
+root_tbl={
+["C"]=1,
+["C#"]=2,
+["D"]=3,
+["D#"]=4,
+["E"]=5,
+["F"]=6,
+["F#"]=7,
+["G"]=8,
+["G#"]=9,
+["A"]=10,
+["A#"]=11,
+["B"]=12,
+["D♭"]=2,
+["E♭"]=4,
+["G♭"]=7,
+["A♭"]=9,
+["B♭"]=11,
+["Db"]=2,
+["Eb"]=4,
+["Gb"]=7,
+["Ab"]=9,
+["Bb"]=11
+}
 chord_dict={
 ["major"]={1,5,8},
 ["-5"]={1,5,7},
