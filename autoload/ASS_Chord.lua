@@ -4,15 +4,6 @@ script_description = tr"Help to learn chord."
 script_author = "domo"
 script_version = "1.0"
 
-local Y = require"Yutils"
-local scale=2
-local other_tag=""
-local hi_1c="&H0000FF&\\1a&H60&"
-local hi_other_tag="\\fad(200,300)"
-
---Key Shapes
-local Normal_Key = {"m 0 0 l 0 82 l 15 82 l 15 54 l 9 54 l 9 0 ","m 19 0 l 19 53 l 10 53 l 10 0 ","m 20 54 l 16 54 l 16 82 l 31 82 l 31 54 l 27 54 l 27 0 l 20 0 ","m 28 0 l 28 53 l 37 53 l 37 0 ","m 32 54 l 32 82 l 47 82 l 47 0 l 38 0 l 38 54 ","m 48 0 l 48 82 l 63 82 l 63 54 l 56 54 l 56 0 ","m 66 0 l 66 53 l 57 53 l 57 0 ","m 67 54 l 64 54 l 64 82 l 79 82 l 79 54 l 74 54 l 74 0 l 67 0 ","m 75 0 l 75 53 l 84 53 l 84 0 ","m 85 54 l 80 54 l 80 82 l 95 82 l 95 54 l 92 54 l 92 0 l 85 0 ","m 93 0 l 93 53 l 102 53 l 102 0 ","m 111 0 l 111 82 l 96 82 l 96 54 l 103 54 l 103 0 "}
-
 local function split(str, split_char)      
     local sub_str_tab = {}
     while true do          
@@ -35,6 +26,16 @@ function is_include(value, tbl)
       end
     end
     return false
+end
+
+local function para_set()
+	--Key Shapes
+	Normal_Key = {"m 0 0 l 0 82 l 15 82 l 15 54 l 9 54 l 9 0 ","m 19 0 l 19 53 l 10 53 l 10 0 ","m 20 54 l 16 54 l 16 82 l 31 82 l 31 54 l 27 54 l 27 0 l 20 0 ","m 28 0 l 28 53 l 37 53 l 37 0 ","m 32 54 l 32 82 l 47 82 l 47 0 l 38 0 l 38 54 ","m 48 0 l 48 82 l 63 82 l 63 54 l 56 54 l 56 0 ","m 66 0 l 66 53 l 57 53 l 57 0 ","m 67 54 l 64 54 l 64 82 l 79 82 l 79 54 l 74 54 l 74 0 l 67 0 ","m 75 0 l 75 53 l 84 53 l 84 0 ","m 85 54 l 80 54 l 80 82 l 95 82 l 95 54 l 92 54 l 92 0 l 85 0 ","m 93 0 l 93 53 l 102 53 l 102 0 ","m 111 0 l 111 82 l 96 82 l 96 54 l 103 54 l 103 0 "}
+	scale=2
+	Y = require"Yutils"
+	other_tag=""
+	hi_1c="&H0000FF&\\1a&H60&"
+	hi_other_tag="\\fad(200,300)"
 end
 
 local function std(chord_str)
@@ -129,12 +130,14 @@ local function analyse(chord_str)
 end
 
 function add_assdrawing(subtitles, selected_lines, active_line)
+	para_set()
 	xres, yres,_,_ = aegisub.video_size()
 	if not (xres and yres) then 
 		aegisub.debug.out("Please load a video first.")
 		aegisub.cancel()
 	end
 	local x_off=(xres-112*scale*3)/2
+	aegisub.debug.out(tostring(scale))
 	local y_off=2/3*yres
 	local xspacing=112*scale
 	for i=1,#Normal_Key do
