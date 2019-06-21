@@ -1,43 +1,14 @@
---Preliminary work of ASS_Chord
-
 local tr = aegisub.gettext
 script_name = tr"ASS_Chord"
-script_description = tr"Help to learn chord"
+script_description = tr"Help to learn chord."
 script_author = "domo"
 script_version = "1.0"
 
 local Y = require"Yutils"
-local x_off=700
-local y_off=720
-local scale=1.5
-local xspacing=112*scale
+local scale=2
 local other_tag=""
 local hi_1c="&H0000FF&\\1a&H60&"
 local hi_other_tag="\\fad(200,300)"
-local root_tbl={
-["C"]=1,
-["C#"]=2,
-["D"]=3,
-["D#"]=4,
-["E"]=5,
-["F"]=6,
-["F#"]=7,
-["G"]=8,
-["G#"]=9,
-["A"]=10,
-["A#"]=11,
-["B"]=12,
-["D♭"]=2,
-["E♭"]=4,
-["G♭"]=7,
-["A♭"]=9,
-["B♭"]=11,
-["Db"]=2,
-["Eb"]=4,
-["Gb"]=7,
-["Ab"]=9,
-["Bb"]=11
-}
 
 --Key Shapes
 local Normal_Key = {"m 0 0 l 0 82 l 15 82 l 15 54 l 9 54 l 9 0 ","m 19 0 l 19 53 l 10 53 l 10 0 ","m 20 54 l 16 54 l 16 82 l 31 82 l 31 54 l 27 54 l 27 0 l 20 0 ","m 28 0 l 28 53 l 37 53 l 37 0 ","m 32 54 l 32 82 l 47 82 l 47 0 l 38 0 l 38 54 ","m 48 0 l 48 82 l 63 82 l 63 54 l 56 54 l 56 0 ","m 66 0 l 66 53 l 57 53 l 57 0 ","m 67 54 l 64 54 l 64 82 l 79 82 l 79 54 l 74 54 l 74 0 l 67 0 ","m 75 0 l 75 53 l 84 53 l 84 0 ","m 85 54 l 80 54 l 80 82 l 95 82 l 95 54 l 92 54 l 92 0 l 85 0 ","m 93 0 l 93 53 l 102 53 l 102 0 ","m 111 0 l 111 82 l 96 82 l 96 54 l 103 54 l 103 0 "}
@@ -79,7 +50,7 @@ end
 local function slash_handler(org_chord,root_note)
 	new_tbl={table.unpack(org_chord)}
 	if not is_include(root_note,org_chord) then --Additional root.
-		print("Addition")
+		-- print("Addition")
 		for i=1,#org_chord do
 			new_tbl[i+1]=org_chord[i]
 		end
@@ -89,7 +60,7 @@ local function slash_handler(org_chord,root_note)
 			org_chord[1]=org_chord[1]-12
 		end
 	else --Inversion
-		print("Inversion")
+		-- print("Inversion")
 		for k,v in pairs(org_chord) do
 			if v==root_tbl[slash_root] then
 				key=k
@@ -158,6 +129,14 @@ local function analyse(chord_str)
 end
 
 function add_assdrawing(subtitles, selected_lines, active_line)
+	xres, yres,_,_ = aegisub.video_size()
+	if not (xres and yres) then 
+		aegisub.debug.out("Please load a video first.")
+		aegisub.cancel()
+	end
+	local x_off=(xres-112*scale*3)/2
+	local y_off=2/3*yres
+	local xspacing=112*scale
 	for i=1,#Normal_Key do
 		Normal_Key[i]=Y.shape.filter(Normal_Key[i],function(x,y) return scale*x,scale*y end)
 	end
@@ -176,12 +155,13 @@ function add_assdrawing(subtitles, selected_lines, active_line)
 	end
 	l.comment=false
 	l.effect="fx"
-	l.actor="keys"
+	l.actor="wkeys"
 	l.text = "{"..string.format("\\1c&HFFFFFF&\\an7\\pos(%d,%d)\\p1%s",0,0,other_tag).."}"..w_key
 	l.start_time = 0
 	l.end_time = 36000000
 	l.layer = 0
 	subtitles[0]= l 
+	l.actor="bkeys"
 	l.text = "{"..string.format("\\1c&H000000&\\an7\\pos(%d,%d)\\p1%s",0,0,other_tag).."}"..b_key
 	subtitles[0]= l
 	for i=1, #subtitles do
@@ -189,7 +169,6 @@ function add_assdrawing(subtitles, selected_lines, active_line)
 		if subtitles[i].class == "dialogue" and subtitles[i].effect=="fx" and string.find(subtitles[i].style,"Chord")~=nil then
 		l = subtitles[i]
 		chord_str=l.text:gsub("{[^}]+}", "")
---		aegisub.debug.out(chord_str.."\n")
 		pitch_tbl=analyse(chord_str)
 		for j=1,#pitch_tbl do
 			pitch=pitch_tbl[j]
@@ -199,9 +178,9 @@ function add_assdrawing(subtitles, selected_lines, active_line)
 			l.text= "{"..string.format("\\an7\\1c%s\\pos(%d,%d)\\p1%s",hi_1c,key_pos_x,key_pos_y,hi_other_tag).."}"..key
 			subtitles[0]=l
 		end
-		aegisub.debug.out("\n")
 		end
 	end
+	aegisub.debug.out("Done.")
 end
 
 aegisub.register_macro(script_name, script_description, add_assdrawing)
