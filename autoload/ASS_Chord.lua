@@ -101,6 +101,7 @@ end
 
 local function analyse(chord_str)
 	chord_str=std(chord_str)
+--	aegisub.debug.out(chord_str.."\n")
 	if string.find(chord_str,"/")~=nil then
 		slash=true
 		chord_str=split(chord_str,"/")
