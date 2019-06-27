@@ -39,6 +39,7 @@ local function para_set()
 end
 
 local function std(chord_str)
+	chord_str=string.gsub(chord_str,"^%l", string.upper)
 	chord_str=string.gsub(chord_str,"m/M7","mM7")
 	chord_str=string.gsub(chord_str,"m(M7)","mM7")
 	chord_str=string.gsub(chord_str,"min/maj7","mM7")
@@ -50,8 +51,8 @@ end
 
 local function slash_handler(org_chord,root_note)
 	new_tbl={table.unpack(org_chord)}
-	if not is_include(root_note,org_chord) then --Additional root.
-		-- print("Addition")
+	if not is_include(root_note,org_chord) and not is_include(root_note+12,org_chord) and not is_include(root_note-12,org_chord) then --Additional root.
+--		aegisub.debug.out("Addition.\n")
 		for i=1,#org_chord do
 			new_tbl[i+1]=org_chord[i]
 		end
@@ -61,9 +62,9 @@ local function slash_handler(org_chord,root_note)
 			org_chord[1]=org_chord[1]-12
 		end
 	else --Inversion
-		-- print("Inversion")
+--		aegisub.debug.out("Inversion.\n")
 		for k,v in pairs(org_chord) do
-			if v==root_tbl[slash_root] then
+			if (v-1)%12+1==root_tbl[slash_root] then
 				key=k
 				break
 			end
@@ -74,9 +75,9 @@ local function slash_handler(org_chord,root_note)
 		end
 		for i=1,n do
 			org_chord[i]=new_tbl[key+i-1]
-		end
-		if math.max(table.unpack(org_chord))~=org_chord[#org_chord] then
-			org_chord[#org_chord]=org_chord[#org_chord]+12
+			if org_chord[i]<org_chord[1] then
+				org_chord[i]=org_chord[i]+12
+			end
 		end
 	end
 	new_chord=org_chord
@@ -84,9 +85,15 @@ local function slash_handler(org_chord,root_note)
 end
 
 local function ocatave_handler(chord_tbl)
-	if math.min(table.unpack(chord_tbl))>=12 and math.max(table.unpack(chord_tbl))>=24 then 
+	local chord_max,chord_min=math.max(table.unpack(chord_tbl)),math.min(table.unpack(chord_tbl))
+	if chord_min>=12 and chord_max>=24 then 
 		for i=1,#chord_tbl do
 			chord_tbl[i]=chord_tbl[i]-12
+		end
+	end
+	if chord_max-chord_min<=12 and chord_min<7 then
+		for i=1,#chord_tbl do
+			chord_tbl[i]=chord_tbl[i]+12
 		end
 	end
 	return chord_tbl
@@ -118,6 +125,7 @@ local function analyse(chord_str)
 		aegisub.debug.out("Slash root error.\n")
 	end
 	output_tbl={}
+	--Translate
 	for i=1,#chord_dict[chord] do
 		output_tbl[i]=chord_dict[chord][i]+root_tbl[root]-1
 	end
@@ -137,7 +145,6 @@ function add_assdrawing(subtitles, selected_lines, active_line)
 		aegisub.cancel()
 	end
 	local x_off=(xres-112*scale*3)/2
-	aegisub.debug.out(tostring(scale))
 	local y_off=2/3*yres
 	local xspacing=112*scale
 	for i=1,#Normal_Key do
