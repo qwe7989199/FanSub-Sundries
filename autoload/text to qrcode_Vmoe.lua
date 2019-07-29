@@ -1,11 +1,12 @@
 script_name="Text to QRCode"
-script_description="Convert Text to QRCode ASSDrawing (Insider)"
+script_description="Convert Text to QRCode ASSDrawing (Internal)"
 script_author="domo"
 script_version="1.0"
 
 function text_to_qrcode(subtitles, selected_lines, active_line)
 	local qrencode=require"qrencode"
 	local shape=require"shape"
+	Y=require"Yutils"
 	local min_size=100
 	local size,color,use_shape_lib,QRStyle=setting(min_size)
 	local alpha_str,color_str=HTML2ASS(color)
@@ -16,14 +17,29 @@ function text_to_qrcode(subtitles, selected_lines, active_line)
 	elseif QRStyle=="Round" then
 		use_shape_lib=false
 		function gen_elem(a,b) return shape.ellipse((a-1)*width,(b-1)*width,width,width) end
-	else 
+	elseif QRStyle=="Diamond" then
 		use_shape_lib=true
 		function gen_elem(a,b) return shape.ellipse((a-1)*width,(b-1)*width,width,width) end
+	elseif QRStyle=="RoundSquare" then
+		use_shape_lib=false
+		function gen_elem(a,b) return shape.rounded_rect((a-1)*width,(b-1)*width,width,width,1,1) end
+	elseif QRStyle=="Triangle-Up" then
+		use_shape_lib=false
+		function gen_elem(a,b) return string.format("m %d %d l %d %d l %d %d ",(a-1)*width,(b)*width,(a)*width,(b)*width,(a-1)*width+width/2,(b-1)*width) end
+	elseif QRStyle=="Triangle-Down" then
+		use_shape_lib=false
+		function gen_elem(a,b) return string.format("m %d %d l %d %d l %d %d ",(a-1)*width,(b-1)*width,(a)*width,(b-1)*width,(a-1)*width+width/2,(b)*width) end
+	elseif QRStyle=="Triangle-Left" then
+		use_shape_lib=false
+		function gen_elem(a,b) return string.format("m %d %d l %d %d l %d %d ",(a)*width,(b-1)*width,(a)*width,(b)*width,(a-1)*width,(b-1)*width+width/2) end
+	elseif QRStyle=="Triangle-Right" then
+		use_shape_lib=false
+		function gen_elem(a,b) return string.format("m %d %d l %d %d l %d %d ",(a-1)*width,(b-1)*width,(a-1)*width,(b)*width,(a)*width,(b-1)*width+width/2) end
 	end
 	if use_shape_lib then
 		function connect(a,b) return shape.united(a,b) end
 	else
-		function connect(a,b) return a.." "..b end
+		function connect(a,b) return b..a end
 	end
 	for z, k in ipairs(selected_lines) do
 		code_shape=""
@@ -77,10 +93,13 @@ function setting(min_size)
 	{x=1,y=4,class="label",label="Optimize ASSDrawing"},
 	{x=1,y=5,class="checkbox",name="use_shape_lib",value=true},
 	{x=1,y=6,class="label",label="QRCode Style"},
-	{x=1,y=7,class="dropdown",name="QRStyle",items={"Square","Diamond","Round"},value="Square"}
+	{x=1,y=7,class="dropdown",name="QRStyle",items={"Square","Diamond","Round","RoundSquare","Triangle-Up","Triangle-Down","Triangle-Left","Triangle-Right"},value="Square"}
 	}
 	
 	button,config =_G.aegisub.dialog.display(dialog_config,{"OK","Cancel"})
+	if button=="Cancel" then
+		aegisub.cancel()
+	end
 	size=config.Size
 	color=config.Color
 	use_shape_lib=config.use_shape_lib
