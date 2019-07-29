@@ -6,7 +6,6 @@ script_version="1.0"
 function text_to_qrcode(subtitles, selected_lines, active_line)
 	local qrencode=require"qrencode"
 	local shape=require"shape"
-	Y=require"Yutils"
 	local min_size=100
 	local size,color,use_shape_lib,QRStyle=setting(min_size)
 	local alpha_str,color_str=HTML2ASS(color)
