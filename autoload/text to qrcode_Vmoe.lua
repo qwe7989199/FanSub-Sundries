@@ -15,13 +15,13 @@ function text_to_qrcode(subtitles, selected_lines, active_line)
 		function gen_elem(a,b) return string.format("m %d %d l %d %d l %d %d l %d %d ",(a-1)*width,(b-1)*width,(a)*width,(b-1)*width,(a)*width,(b)*width,(a-1)*width,(b)*width) end
 	elseif QRStyle=="Round" then
 		use_shape_lib=false
-		function gen_elem(a,b) return shape.ellipse((a-1)*width,(b-1)*width,width,width) end
+		function gen_elem(a,b) return " "..shape.ellipse((a-1)*width,(b-1)*width,width,width) end
 	elseif QRStyle=="Diamond" then
 		use_shape_lib=true
-		function gen_elem(a,b) return shape.ellipse((a-1)*width,(b-1)*width,width,width) end
+		function gen_elem(a,b) return " "..shape.ellipse((a-1)*width,(b-1)*width,width,width) end
 	elseif QRStyle=="RoundSquare" then
 		use_shape_lib=false
-		function gen_elem(a,b) return shape.rounded_rect((a-1)*width,(b-1)*width,width,width,1,1) end
+		function gen_elem(a,b) return " "..shape.rounded_rect((a-1)*width,(b-1)*width,width,width,1,1) end
 	elseif QRStyle=="Triangle-Up" then
 		use_shape_lib=false
 		function gen_elem(a,b) return string.format("m %d %d l %d %d l %d %d ",(a-1)*width,(b)*width,(a)*width,(b)*width,(a-1)*width+width/2,(b-1)*width) end
@@ -38,7 +38,7 @@ function text_to_qrcode(subtitles, selected_lines, active_line)
 	if use_shape_lib then
 		function connect(a,b) return shape.united(a,b) end
 	else
-		function connect(a,b) return b..a end
+		function connect(a,b) return a..b end
 	end
 	for z, k in ipairs(selected_lines) do
 		code_shape=""
@@ -63,9 +63,6 @@ function text_to_qrcode(subtitles, selected_lines, active_line)
 		org_size=#tab_or_message*width
 		size=math.max(org_size/2,size)
 		size_ratio=math.floor(size/org_size*100)
-		if use_shape_lib then
-			code_shape=shape.united("m 0 0",code_shape)
-		end
 		l.text=string.format("{\\fscx%d\\fscy%d\\1c%s\\1a%s",size_ratio,size_ratio,color_str,alpha_str).."\\bord0\\shad0\\p1}"..code_shape
 		subtitles[0]=l
 	end
