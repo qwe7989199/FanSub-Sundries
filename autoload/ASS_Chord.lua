@@ -2,7 +2,7 @@ local tr = aegisub.gettext
 script_name = tr"ASS_Chord"
 script_description = tr"Help to learn chord."
 script_author = "domo"
-script_version = "1.0"
+script_version = "1.1"
 
 local function split(str, split_char)      
     local sub_str_tab = {}
