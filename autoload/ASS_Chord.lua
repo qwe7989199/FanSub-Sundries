@@ -2,7 +2,7 @@ local tr = aegisub.gettext
 script_name = tr"ASS_Chord"
 script_description = tr"Help to learn chord."
 script_author = "domo"
-script_version = "1.1"
+script_version = "1.0"
 
 local function split(str, split_char)      
     local sub_str_tab = {}
@@ -50,6 +50,7 @@ local function std(chord_str)
 	chord_str=string.gsub(chord_str,"min/maj7","mM7")
 	chord_str=string.gsub(chord_str,"min(maj7)","mM7")
 	chord_str=string.gsub(chord_str,"6/9","69")
+	chord_str=string.gsub(chord_str,"maj","")
 	chord_str=string.gsub(chord_str,"min(add9)","minadd9")
 	return chord_str
 end
@@ -164,7 +165,7 @@ function add_assdrawing(subtitles, selected_lines, active_line)
 	end
 	for z, i in ipairs(selected_lines) do
 		chord_str=""
-		if subtitles[i].class == "dialogue" and subtitles[i].effect=="fx" and string.find(subtitles[i].style,"Chord")~=nil then
+		if subtitles[i].class == "dialogue" and string.find(subtitles[i].effect,"fx") and string.find(subtitles[i].style,"Chord")~=nil then
 		l = subtitles[i]
 		chord_str=l.text:gsub("{[^}]+}", "")
 		pitch_tbl=analyse(chord_str)
@@ -205,7 +206,7 @@ function add_text(subtitles,selected_lines)
 		l = subtitles[i]
 		chord_str=""
 		prevl,nextl={},{}
-		if l.class == "dialogue" and l.effect=="fx" and string.find(l.style,"Chord")~=nil then
+		if l.class == "dialogue" and string.find(l.effect,"fx") and string.find(l.style,"Chord")~=nil then
 			prevl.start_time = subtitles[i-1].start_time or subtitles[i].start_time-2000
 			prevl.end_time = subtitles[i-1].end_time or subtitles[i].end_time-1000
 			prevl.duration = prevl.end_time-prevl.start_time
@@ -221,7 +222,7 @@ function add_text(subtitles,selected_lines)
 				l.end_time = l.start_time+2000
 			end
 			l.layer = 1
-			l.text = string.format("{\\alpha&H80&\\frz0.2\\org(0,-100000)\\t(%d,%d,\\frz0\\alpha&H00&)\\t(%d,%d,\\frz-0.2\\alpha&H80&)\\an5\\fad(200,200)}",prevl.duration-100,prevl.duration+100,org_duration+prevl.duration-100,org_duration+prevl.duration+100)..chord_str
+			l.text = string.format("{\\alpha&H80&\\frz0.2\\org(0,-100000)\\t(%d,%d,\\frz0\\alpha&H00&)\\t(%d,%d,\\frz-0.2\\alpha&H80&)\\an2\\fad(200,200)}",prevl.duration-100,prevl.duration+100,org_duration+prevl.duration-100,org_duration+prevl.duration+100)..chord_str
 			subtitles[0]=l
 		end
 	end
