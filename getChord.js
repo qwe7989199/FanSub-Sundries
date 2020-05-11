@@ -27,7 +27,7 @@ for(var i=0;i<chordsSon.length-3;i+=2){
 	}
 }
 function msToTime(s) {
-    return new Date(s).toISOString().slice(10, -1);
+    return new Date(s).toISOString().slice(11, -1);
 }
 navigator.clipboard.writeText(assStr);
 alert("估测曲速为BPM"+bpm+"，和弦已复制到剪切板");
