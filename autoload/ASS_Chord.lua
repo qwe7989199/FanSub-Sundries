@@ -2,7 +2,7 @@ local tr = aegisub.gettext
 script_name = tr"ASS_Chord"
 script_description = tr"Help to learn chord."
 script_author = "domo"
-script_version = "1.0"
+script_version = "1.2"
 
 local function split(str, split_char)      
     local sub_str_tab = {}
@@ -229,5 +229,46 @@ function add_text(subtitles,selected_lines)
 	aegisub.debug.out("Done.")
 end
 
+function chord2MIDI(subtitles,selected_lines)
+	local MIDI=require 'MIDI'
+	local Y=require"Yutils"
+	file=aegisub.dialog.save('Save to MIDI File', '', '','MIDI File(*.mid)|*.mid', false)
+	if file then 
+		midifile=io.open(file,"w+")
+	else
+		aegisub.cancel()
+	end
+	dialog_config=
+	{
+	{class="label",x=1,y=0,width=1,height=1,label="Input BPM: "},
+	{class="floatedit",name="bpm",x=2,y=0,width=1,height=1,value="",min=0,max=1E4}
+	}
+	cfg_res,config = aegisub.dialog.display(dialog_config)
+	local BPM = config.bpm;	
+	local ticksPerBeat = 128;
+	require"chord_dict"
+	tempo = math.floor(60000/BPM*10^3+0.5)
+	-- {'note', start_time, duration, channel, pitch, velocity}
+	my_score = {ticksPerBeat,{{'set_tempo', 0, tempo}}}
+	for z, i in ipairs(selected_lines) do
+		chord_str=""
+		if subtitles[i].class == "dialogue" and string.find(subtitles[i].effect,"fx") and string.find(subtitles[i].style,"Chord")~=nil then
+		l = subtitles[i]
+		chord_str=l.text:gsub("{[^}]+}", "")
+		pitchTbl=analyse(chord_str)
+		startBeat,durBeat=string.match(l.actor,"(%d+)|(%d+)")
+		for j=1,#pitchTbl do
+			pitch=pitchTbl[j]+47
+			table.insert(my_score[2],{'note', (startBeat-1)*ticksPerBeat, durBeat*ticksPerBeat, 1, pitch, 98})
+		end
+		end
+	end
+	my_midi = MIDI.score2midi(my_score)
+	midifile:write(my_midi)
+	midifile:close()
+	print("Done")
+end
+
 aegisub.register_macro(script_name.."/Generate Key Animation", script_description, add_assdrawing)
 aegisub.register_macro(script_name.."/Generate Text Animation", script_description, add_text)
+aegisub.register_macro(script_name.."/Generate MIDI file",script_description, chord2MIDI)
