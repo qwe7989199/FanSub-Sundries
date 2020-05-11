@@ -12,6 +12,7 @@ for(var i=0;i<chordsSon.length-3;i+=2){
 	if (className.indexOf("nolabel")==-1){
 		var chordName = chordsSon[i].getElementsByTagName('div')[0].children[0].className.replace("chord-label","");
 		chordName = chordName.replace(" label-","");
+		chordName = chordName.replace("s_","#");
 		chordName = chordName.replace("_","");
 		var baseName = chordsSon[i].getElementsByTagName('div')[0].children[1].className.replace("bass-label","");
 		baseName = baseName.replace(" label-bass_","");
