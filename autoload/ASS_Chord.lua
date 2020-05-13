@@ -115,11 +115,11 @@ local function analyse(chord_str)
 	if string.find(chord_str,"/")~=nil then
 		slash=true
 		chord_str=split(chord_str,"/")
-		signature,s_or_f,chord=string.match(chord_str[1],"([CDEFGAB])([#♭b]?)([^#♭b　 ]*)")
-		slash_root,other_thing=string.match(chord_str[2],"([CDEFGAB][#♭b]?)([^#♭b　 ]*)")
+		signature,s_or_f,chord=string.match(chord_str[1],"([CDEFGAB])([#♭b]*)([^#♭b　 ]*)")
+		slash_root,other_thing=string.match(chord_str[2],"([CDEFGAB][#♭b]*)([^#♭b　 ]*)")
 	else
 		slash=false
-		signature,s_or_f,chord=string.match(chord_str,"([CDEFGAB])([#♭b]?)([^#♭b　 ]*)")
+		signature,s_or_f,chord=string.match(chord_str,"([CDEFGAB])([#♭b]*)([^#♭b　 ]*)")
 	end
 	root = signature..s_or_f
 	if chord=="" then
