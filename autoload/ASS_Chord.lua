@@ -266,7 +266,7 @@ function chord2MIDI(subtitles,selected_lines)
 	my_midi = MIDI.score2midi(my_score)
 	midifile:write(my_midi)
 	midifile:close()
-	print("Done")
+	aegisub.debug.out("Done.")
 end
 
 aegisub.register_macro(script_name.."/Generate Key Animation", script_description, add_assdrawing)
