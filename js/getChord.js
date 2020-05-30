@@ -13,7 +13,7 @@ if (!window.chooseFileSystemEntries) {
   var noWriteFile=true;
   var assStr="";
 }else{
-  var assStr="[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text";
+  var assStr="[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n";
   var noWriteFile=false;
 }
 const saveFileOptions = {type: 'save-file',accepts:[{description: 'Advanced SubStation Alpha Subtitle',mimeTypes: ['text/ssa'],extensions: ['ass'],}]};
