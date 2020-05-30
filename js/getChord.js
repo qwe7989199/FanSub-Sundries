@@ -8,9 +8,18 @@
 */ 
 
 javascript:(function getChord(){
+if (!window.chooseFileSystemEntries) {
+  alert("请尽量使用Chrome(版本>=v83)\n并且在chrome://flags中开启Native File System API\n否则只能手动粘贴ASS");
+  var noWriteFile=true;
+  var assStr="";
+}else{
+  var assStr="[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text";
+  var noWriteFile=false;
+}
+const saveFileOptions = {type: 'save-file',accepts:[{description: 'Advanced SubStation Alpha Subtitle',mimeTypes: ['text/ssa'],extensions: ['ass'],}]};
 var host=window.location.host;
 var chordsObj=[];
-var assStr="";
+
 switch(host){
 	case "chordify.net":
 		assStr,bpm=fromChordify();
@@ -21,8 +30,16 @@ switch(host){
 	default:
 		alert("只支持chordify和ufret的和弦导出");
 }
-navigator.clipboard.writeText(assStr);
-alert("估测曲速为BPM"+bpm+"，和弦已复制到剪切板");
+if (noWriteFile){
+	navigator.clipboard.writeText(assStr);
+	alert("估测曲速为BPM"+bpm+"\n和弦已复制到剪切板");
+	}else{
+(async ()=> {
+  const handle = await window.chooseFileSystemEntries(saveFileOptions);
+  await writeFile(handle, assStr);
+  alert("估测曲速为BPM"+bpm+"\n和弦已保存到本地");
+})();
+}
 function fromChordify(){
 	var initialData=window.__INITIAL_DATA__;
 	var bpm=initialData.state.songs["list"][0]["derived_bpm"];
@@ -87,7 +104,14 @@ function chord2ASS(chordsObj,timePerBeat,initOffset){
 	}
 	return assStr
 }
+
 function msToTime(s){
     return new Date(s).toISOString().slice(11, -1);
+}
+
+async function writeFile(fileHandle, contents) {
+  const writable = await fileHandle.createWritable();
+  await writable.write(contents);
+  await writable.close();
 }
 })();
