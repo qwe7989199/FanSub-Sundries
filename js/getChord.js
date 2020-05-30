@@ -29,6 +29,7 @@ switch(host){
 		break;
 	default:
 		alert("只支持chordify和ufret的和弦导出");
+		return;
 }
 if (noWriteFile){
 	navigator.clipboard.writeText(assStr);
